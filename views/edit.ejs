@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ 
+    <%- include("head") %>
+
+</head>
+<body>
+    <div class="ui container" ng-app="myApp" ng-controller="formCtrl" >
+    
+       
+        
+        <a href="/" class="ui positive button" style="margin: 25px;">Home</a>
+        
+        <form class="ui form" id="form" >
+           
+            <div class="two fields">
+              <div class="field">
+                <label>Name</label>
+                <input  type="text" ng-model="user.name" name="name"  required />
+            </div>
+
+            <div class="field">
+                <label>Role</label>
+                <input  type="text" ng-model="user.role" name="role" required />
+              </div>
+            </div>
+    
+            <div class="two fields">
+                
+                <div class="field">
+                    <label>Email </label>
+                    <input type="email" ng-model="user.email" name="email" required />
+                </div>
+    
+                <div class="field {{errorNum}}">
+                    <label>Phone Number</label>
+                    <input type="text" ng-model="user.number" name="number" required />
+                </div>
+    
+            </div>
+    
+            <div class="field">
+              <label>Address</label>
+              <textarea rows='3' ng-model="user.address" name="address"  required >
+              </textarea> 
+            </div>
+    
+            <button type="submit" class="ui primary button" ng-click="formSubmit()">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        const app = angular.module('myApp',[]);
+        app.controller('formCtrl', function($scope, $http){
+
+            const loc = window.location.href.split('/')
+
+            $http.get(`/api/${loc[loc.length - 1]}`).then((res)=>{
+
+                $scope.user = res.data.test
+
+            })
+
+            // $scope.formSubmit = function(){
+            //     let obj = $scope.user
+            //     if(obj.number.length !== 10 ) {
+            //     $scope.errorNum = 'error'            
+            // }else{
+            //     $http.put(`/api/edit/${loc[loc.length - 1]}`, $scope.user).then((res)=>{
+            //         window.location.href = '/';
+            //     })
+            // }
+            // }
+
+            $(document).ready(function () {
+    $("#form").validate({
+        rules: {
+            "name": {
+                required: true,
+                minlength: 5
+            },
+            "email": {
+                required: true,
+                email: true
+            },
+            "role":{
+                required:true
+            },
+            "number":{
+                required:true,
+                number:true,
+                maxlength:10,
+                minlength:10
+            },
+            "address":{
+                required:true
+            }
+        },
+        messages: {
+            "name": {
+                required: "Please, enter a name"
+            },
+            "email": {
+                required: "Please, enter an email",
+                email: "Email is invalid"
+            },
+            "role":{
+                required:"Please, enter a role"
+            },
+            "number":{
+                required:"Please, enter a number",
+                
+            },
+            "address":{
+                required:"Please, enter a address"
+            }
+        },
+        submitHandler: function (form) { // for demo
+                     $http.put(`/api/edit/${loc[loc.length - 1]}`, $scope.user).then((res)=>{
+                    window.location.href = '/';
+                })
+        }
+    });
+
+});
+
+
+
+        })
+    </script>
+</body>
+</html>

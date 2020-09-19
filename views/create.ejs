@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("head") %>
+</head>
+<body>
+<div class="ui container" ng-app="myApp" ng-controller="formCtrl" name="myFrm">
+    
+    
+    
+    <a href="/" class="ui positive button" style="margin: 25px;">Home</a>
+    
+    <form class="ui form" id="form" >
+       
+        <div class="two fields">
+          <div class="field">
+            <label>Name</label>
+            <input  type="text" ng-model="user.name" name="name" required >
+            <span ng-show="myFrm.name.$touched || myFrm.name.$invalid" style="color: red;">The name is required.</span>
+            
+          </div>
+          <div class="field">
+            <label>Role</label>
+            <input  type="text" ng-model="user.role"  name="role" required/>
+            <span>{{myFrm.role.$valid}}</span>
+          </div>
+        </div>
+
+        <div class="two fields">
+            
+            <div class="field">
+                <label>Email </label>
+                <input type="email" ng-model="user.email" name="email" required/>
+                <span>{{myFrm.email.$valid}}</span>
+            </div>
+
+            <div class="field {{errorNum}}">
+                <label>Phone Number</label>
+                <input type="text" ng-model="user.number" name="number" required/>
+                <span>{{myFrm.number.$valid}}</span>
+            </div>
+
+        </div>
+
+        <div class="field">
+          <label>Address</label>
+          <textarea rows='3' ng-model="user.address" name="address" required>
+              <span>{{myFrm.address.$valid}}</span>
+          </textarea> 
+        </div>
+
+        <button type="submit" class="ui primary button" >Submit</button>
+    </form>
+</div>
+
+
+
+<script>
+    let app = angular.module('myApp',[]);
+    app.controller('formCtrl', function($scope, $http ){
+
+        $(document).ready(function () {
+    $("#form").validate({
+        rules: {
+            "name": {
+                required: true,
+                minlength: 5
+            },
+            "email": {
+                required: true,
+                email: true
+            },
+            "role":{
+                required:true
+            },
+            "number":{
+                required:true,
+                number:true,
+                maxlength:10,
+                minlength:10
+            },
+            "address":{
+                required:true
+            }
+        },
+        messages: {
+            "name": {
+                required: "Please, enter a name"
+            },
+            "email": {
+                required: "Please, enter an email",
+                email: "Email is invalid"
+            },
+            "role":{
+                required:"Please, enter a role"
+            },
+            "number":{
+                required:"Please, enter a number",
+                
+            },
+            "address":{
+                required:"Please, enter a address"
+            }
+        },
+        submitHandler: function (form) { // for demo
+                     $http.post(`/api/add`, $scope.user ).then((res)=>{
+                    window.location.href = '/';
+                })
+        }
+    });
+
+});
+            
+    
+
+        
+
+        
+    })
+</script>
+
+</body>
+</html>

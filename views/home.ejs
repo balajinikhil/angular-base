@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("head") %>
+    <style>
+      .red {
+        color: red;
+      }
+
+      .green {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ui container" ng-app="myApp" ng-controller="ctrl">
+      <div class="ui segment" style="margin-top: 25px">
+        <!-- MENU SERACH BAR -->
+        <div class="ui menu">
+          <div class="right item">
+            <div class="ui action input">
+              <input type="text" placeholder="Search" ng-model="search" />
+              <div class="ui button">Go</div>
+            </div>
+          </div>
+        </div>
+
+        <a href="/addNew" class="ui positive button">Add New</a>
+
+        <div id="msg" class="ui green message">Status Changed</div>
+
+        <!-- RENDER LIST -->
+        <div class="ui segment">
+          <table id="myTable" class="display">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Edit</th>
+                <th>Delete</th>
+                <th>Change Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr
+                ng-repeat="x in list | filter:search"
+                style="text-align: center"
+              >
+                <td ng-bind="x.name"></td>
+                <td ng-bind="x.role | uppercase"></td>
+                <td ng-bind="x.email"></td>
+                <td ng-bind="x.number"></td>
+
+                <td ng-class="selClass(x.status)">
+                  {{ x.status }}
+                </td>
+
+                <td>
+                  <a href="/edit/{{ x.email }}"><i class="edit icon"></i></a>
+                </td>
+                <td>
+                  <a href="#" ng-click="deleteOne(x.email)">
+                    <i class="trash icon"></i>
+                  </a>
+                </td>
+                <td>
+                  <a href="#" ng-click="changeStatus(x.email)">
+                    <i class="eye icon"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const app = angular.module("myApp", []);
+      app.controller("ctrl", function ($scope, $http) {
+        $http.get("/api/all").then((res) => {
+          $scope.list = res.data.list;
+
+          $(document).ready(function () {
+            $("#myTable").DataTable();
+            $("#msg").hide();
+          });
+        });
+
+        $scope.selClass = function (val) {
+          if (val == "active") return "green";
+          else return "red";
+        };
+
+        $scope.changeStatus = function (val) {
+          $http.get(`/api/status/${val}`).then((res) => {
+            $("#msg").show();
+
+            setTimeout(() => {
+              window.location.href = "/";
+            }, 1000);
+          });
+        };
+
+        $scope.deleteOne = function (val) {
+          $http.delete(`/api/delete/${val}`).then((res) => {
+            window.location.href = "/";
+          });
+        };
+      });
+    </script>
+  </body>
+</html>
